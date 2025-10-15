@@ -1,0 +1,21 @@
+{
+  "name": "private-supply-chain",
+  "version": "1.0.0",
+  "description": "Privacy-preserving supply chain tracking",
+  "main": "frontend/index.html",
+  "scripts": {
+    "compile": "hardhat compile",
+    "deploy:sepolia": "hardhat run scripts/deploy-sepolia.js --network sepolia",
+    "build": "echo 'Build completed - static files ready'",
+    "start": "echo 'Starting frontend server'",
+    "dev": "echo 'Development server ready'"
+  },
+  "devDependencies": {
+    "hardhat": "^2.19.0"
+  },
+  "dependencies": {
+    "@nomiclabs/hardhat-ethers": "^2.2.3",
+    "dotenv": "^16.3.1",
+    "ethers": "^5.7.2"
+  }
+}

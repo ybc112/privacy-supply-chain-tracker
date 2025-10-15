@@ -1,0 +1,47 @@
+#!/bin/bash
+
+echo "================================================"
+echo "    🔨 Manual Contract Compilation & Deploy"
+echo "================================================"
+echo ""
+
+# Step 1: Install minimal dependencies
+echo "📦 Installing minimal dependencies..."
+echo "Please run manually:"
+echo ""
+echo "  npm install hardhat@2.19.0 @nomiclabs/hardhat-ethers@2.2.3 ethers@5.7.2 dotenv@16.3.1"
+echo ""
+echo "================================================"
+echo ""
+
+# Step 2: Compile instructions
+echo "📝 After installation, compile with:"
+echo ""
+echo "  npx hardhat compile"
+echo ""
+echo "Or if npx doesn't work:"
+echo "  ./node_modules/.bin/hardhat compile"
+echo ""
+echo "================================================"
+echo ""
+
+# Step 3: Deploy instructions
+echo "🚀 To deploy to Sepolia:"
+echo ""
+echo "1. First, generate a new private key:"
+echo "   node -e \"console.log('0x' + require('crypto').randomBytes(32).toString('hex'))\""
+echo ""
+echo "2. Update .env file with the new private key"
+echo ""
+echo "3. Deploy with:"
+echo "   npx hardhat run scripts/deploy-sepolia.js --network sepolia"
+echo ""
+echo "   Or:"
+echo "   ./node_modules/.bin/hardhat run scripts/deploy-sepolia.js --network sepolia"
+echo ""
+echo "================================================"
+echo ""
+echo "💡 Tips:"
+echo "- Make sure you have at least 0.1 Sepolia ETH"
+echo "- Get test ETH from: https://sepoliafaucet.com"
+echo "- Check deployment at: https://sepolia.etherscan.io"

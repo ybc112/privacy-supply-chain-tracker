@@ -1,0 +1,14 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(tree:*)",
+      "Bash(npm install:*)",
+      "Bash(chmod:*)",
+      "Bash(node:*)",
+      "Bash(npx hardhat compile:*)",
+      "Bash(npx hardhat run:*)"
+    ],
+    "deny": [],
+    "ask": []
+  }
+}

@@ -1,0 +1,274 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Private Supply Chain Tracker - Sepolia</title>
+    <link rel="stylesheet" href="css/style.css">
+    <!-- Load ethers.js from multiple CDNs for reliability -->
+    <script src="https://cdn.jsdelivr.net/npm/ethers@5.7.2/dist/ethers.umd.min.js"></script>
+    <script>
+        // Fallback CDN if primary fails
+        if (typeof ethers === 'undefined') {
+            document.write('<script src="https://unpkg.com/ethers@5.7.2/dist/ethers.umd.min.js"><\/script>');
+        }
+    </script>
+</head>
+<body>
+    <div id="app">
+        <!-- Header -->
+        <header class="header">
+            <div class="container">
+                <div class="logo">
+                    <h1>🔒 Private Supply Chain Tracker</h1>
+                    <p class="subtitle">Privacy-Preserving Supply Chain on Sepolia</p>
+                </div>
+                <div class="wallet-section">
+                    <div id="wallet-info" class="wallet-info">
+                        <button id="connect-wallet" class="btn btn-primary">Connect Wallet</button>
+                        <div id="account-info" class="account-info" style="display: none;">
+                            <span class="address" id="wallet-address"></span>
+                            <span class="balance" id="wallet-balance"></span>
+                            <button id="disconnect" class="btn btn-secondary">Disconnect</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </header>
+
+        <!-- Navigation Tabs -->
+        <nav class="nav-tabs">
+            <div class="container">
+                <button class="tab active" data-tab="register">Register Participant</button>
+                <button class="tab" data-tab="create">Create Batch</button>
+                <button class="tab" data-tab="track">Track Product</button>
+                <button class="tab" data-tab="checkpoint">Add Checkpoint</button>
+                <button class="tab" data-tab="verify">Verify Quality</button>
+                <button class="tab" data-tab="admin">Admin Panel</button>
+            </div>
+        </nav>
+
+        <!-- Main Content -->
+        <main class="main-content">
+            <div class="container">
+                <!-- Register Participant Tab -->
+                <div id="register-tab" class="tab-content active">
+                    <h2>Register New Participant</h2>
+                    <div class="card">
+                        <form id="register-form">
+                            <div class="form-group">
+                                <label>Participant Address</label>
+                                <input type="text" id="participant-address" placeholder="0x..." required>
+                            </div>
+                            <div class="form-group">
+                                <label>Role</label>
+                                <select id="participant-role" required>
+                                    <option value="1">Manufacturer</option>
+                                    <option value="2">Supplier</option>
+                                    <option value="3">Distributor</option>
+                                    <option value="4">Retailer</option>
+                                    <option value="5">Inspector</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label>Rating (0-100)</label>
+                                <input type="number" id="participant-rating" min="0" max="100" value="90" required>
+                            </div>
+                            <button type="submit" class="btn btn-primary">Register Participant</button>
+                        </form>
+                    </div>
+                </div>
+
+                <!-- Create Product Batch Tab -->
+                <div id="create-tab" class="tab-content">
+                    <h2>Create Product Batch</h2>
+                    <div class="card">
+                        <form id="create-batch-form">
+                            <div class="form-group">
+                                <label>Quantity</label>
+                                <input type="number" id="batch-quantity" min="1" placeholder="Enter quantity" required>
+                                <span class="hint">🔐 Will be hashed for privacy</span>
+                            </div>
+                            <div class="form-group">
+                                <label>Quality Score (0-100)</label>
+                                <input type="number" id="batch-quality" min="0" max="100" placeholder="Quality score" required>
+                                <span class="hint">🔐 Will be hashed for privacy</span>
+                            </div>
+                            <div class="form-group">
+                                <label>Price Per Unit</label>
+                                <input type="number" id="batch-price" min="0" step="0.01" placeholder="Price" required>
+                                <span class="hint">🔐 Will be hashed for privacy</span>
+                            </div>
+                            <div class="form-group">
+                                <label>Product Description (Public)</label>
+                                <textarea id="batch-metadata" rows="3" placeholder="e.g., Organic Coffee Beans - Grade A" required></textarea>
+                                <span class="hint">📢 This will be public</span>
+                            </div>
+                            <button type="submit" class="btn btn-primary">Create Batch</button>
+                        </form>
+                    </div>
+                </div>
+
+                <!-- Track Product Tab -->
+                <div id="track-tab" class="tab-content">
+                    <h2>Track Product Batch</h2>
+                    <div class="card">
+                        <div class="search-section">
+                            <input type="number" id="track-batch-id" placeholder="Enter Batch ID" min="1">
+                            <button id="track-btn" class="btn btn-primary">Track</button>
+                        </div>
+                        <div id="batch-info" class="batch-info" style="display: none;">
+                            <h3>Batch Information</h3>
+                            <div class="info-grid">
+                                <div class="info-item">
+                                    <label>Batch ID:</label>
+                                    <span id="info-batch-id"></span>
+                                </div>
+                                <div class="info-item">
+                                    <label>Manufacturer:</label>
+                                    <span id="info-manufacturer"></span>
+                                </div>
+                                <div class="info-item">
+                                    <label>Status:</label>
+                                    <span id="info-status" class="status-badge"></span>
+                                </div>
+                                <div class="info-item">
+                                    <label>Created At:</label>
+                                    <span id="info-created"></span>
+                                </div>
+                                <div class="info-item full-width">
+                                    <label>Description:</label>
+                                    <span id="info-metadata"></span>
+                                </div>
+                                <div class="info-item">
+                                    <label>Checkpoints:</label>
+                                    <span id="info-checkpoints"></span>
+                                </div>
+                            </div>
+                            <div class="checkpoint-list" id="checkpoint-list"></div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Add Checkpoint Tab -->
+                <div id="checkpoint-tab" class="tab-content">
+                    <h2>Add Supply Chain Checkpoint</h2>
+                    <div class="card">
+                        <form id="checkpoint-form">
+                            <div class="form-group">
+                                <label>Batch ID</label>
+                                <input type="number" id="checkpoint-batch-id" min="1" required>
+                            </div>
+                            <div class="form-group">
+                                <label>Location</label>
+                                <input type="text" id="checkpoint-location" placeholder="e.g., Warehouse A, City" required>
+                                <span class="hint">🔐 Will be hashed for privacy</span>
+                            </div>
+                            <div class="form-group">
+                                <label>Public Note</label>
+                                <input type="text" id="checkpoint-note" placeholder="e.g., Received at distribution center" required>
+                            </div>
+                            <div class="form-group">
+                                <label>New Status</label>
+                                <select id="checkpoint-status" required>
+                                    <option value="1">In Transit</option>
+                                    <option value="2">Delivered</option>
+                                    <option value="3">Verified</option>
+                                    <option value="4">Recalled</option>
+                                </select>
+                            </div>
+                            <button type="submit" class="btn btn-primary">Add Checkpoint</button>
+                        </form>
+                    </div>
+                </div>
+
+                <!-- Verify Quality Tab -->
+                <div id="verify-tab" class="tab-content">
+                    <h2>Verify Product Quality</h2>
+                    <div class="card">
+                        <form id="verify-form">
+                            <div class="form-group">
+                                <label>Batch ID</label>
+                                <input type="number" id="verify-batch-id" min="1" required>
+                            </div>
+                            <div class="form-group">
+                                <label>New Quality Score (0-100)</label>
+                                <input type="number" id="verify-quality" min="0" max="100" required>
+                                <span class="hint">🔐 Will be hashed for privacy</span>
+                            </div>
+                            <button type="submit" class="btn btn-primary">Update Quality Score</button>
+                        </form>
+                        <div class="notice">
+                            <p>⚠️ Only accounts with Inspector role can verify quality</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Admin Panel Tab -->
+                <div id="admin-tab" class="tab-content">
+                    <h2>Admin Panel</h2>
+                    <div class="card">
+                        <h3>Contract Information</h3>
+                        <div class="info-grid">
+                            <div class="info-item">
+                                <label>Main Contract:</label>
+                                <a href="https://sepolia.etherscan.io/address/0x97FAb964a762feE3aF1bDddEF2138c8Ac5cb9238" target="_blank" class="contract-link">
+                                    0x97FAb964a762feE3aF1bDddEF2138c8Ac5cb9238
+                                </a>
+                            </div>
+                            <div class="info-item">
+                                <label>Traceability Contract:</label>
+                                <a href="https://sepolia.etherscan.io/address/0x54BcFC4BdfDEb4376fa844dFFd1A784570F82C56" target="_blank" class="contract-link">
+                                    0x54BcFC4BdfDEb4376fa844dFFd1A784570F82C56
+                                </a>
+                            </div>
+                            <div class="info-item">
+                                <label>Admin Address:</label>
+                                <span id="admin-address">Loading...</span>
+                            </div>
+                            <div class="info-item">
+                                <label>Next Batch ID:</label>
+                                <span id="next-batch-id">Loading...</span>
+                            </div>
+                        </div>
+
+                        <h3>Grant Access</h3>
+                        <form id="grant-access-form">
+                            <div class="form-group">
+                                <label>Participant Address</label>
+                                <input type="text" id="access-participant" placeholder="0x..." required>
+                            </div>
+                            <div class="form-group">
+                                <label>Batch ID</label>
+                                <input type="number" id="access-batch-id" min="1" required>
+                            </div>
+                            <button type="submit" class="btn btn-primary">Grant Access</button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </main>
+
+        <!-- Footer -->
+        <footer class="footer">
+            <div class="container">
+                <p>Private Supply Chain Tracker on Sepolia Testnet | Powered by Smart Contracts</p>
+                <p class="small">Contract: 0x97FAb964a762feE3aF1bDddEF2138c8Ac5cb9238</p>
+            </div>
+        </footer>
+    </div>
+
+    <!-- Loading Overlay -->
+    <div id="loading" class="loading-overlay" style="display: none;">
+        <div class="spinner"></div>
+        <p>Processing transaction...</p>
+    </div>
+
+    <!-- Notification Container -->
+    <div id="notifications" class="notifications"></div>
+
+    <script src="js/config.js"></script>
+    <script src="js/abi.js"></script>
+    <script src="js/app.js"></script>
+</body>
+</html>
